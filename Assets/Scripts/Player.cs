@@ -5,7 +5,8 @@ public class Player : MonoBehaviour
 {
     // Config
     [SerializeField] float runSpeed = 10f;
-    [SerializeField] float jumpSpeed = 32f;
+    [SerializeField] float jumpSpeed = 5f;
+    [SerializeField] float climbSpeed = 5f;
 
     // State
     bool isAlive = true;
@@ -13,20 +14,27 @@ public class Player : MonoBehaviour
     // Cached component references
     Rigidbody2D myRigidBody;
     Animator myAnimator;
+    Collider2D myCollider2D; // nmeeded for Jump / Climb
+    float gravityScaleAtStart;
 
     // Message then methods
     void Start()
     {
         myRigidBody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
+        myCollider2D = GetComponent<Collider2D>(); //needed for Jump / Climb
+        gravityScaleAtStart = myRigidBody.gravityScale; //need for Ladder
     }
 
     // Update is called once per frame
     void Update()
     {
         Run();
-        FlipSprite();
+        ClimbLadder();
         Jump();
+        FlipSprite();
+
+
     }
 
     private void Run()
@@ -39,14 +47,37 @@ public class Player : MonoBehaviour
         myAnimator.SetBool("Running", playerHasHorizontalSpeed);
     }
 
+    private void ClimbLadder()
+    {
+        if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Climbing"))) 
+        {
+            myAnimator.SetBool("Climbing", false);
+            myRigidBody.gravityScale = gravityScaleAtStart;
+            return; 
+        }
+
+        float controlThrow = Input.GetAxis("Vertical");
+        Vector2 climbVelocity = new Vector2(myRigidBody.velocity.x, controlThrow * climbSpeed);
+        myRigidBody.velocity = climbVelocity;
+        myRigidBody.gravityScale = 0f;
+
+        bool playerHasVerticalSpeed = Mathf.Abs(myRigidBody.velocity.y) > Mathf.Epsilon;
+        myAnimator.SetBool("Climbing", playerHasVerticalSpeed);
+
+
+    }
     private void Jump()
     {
+        // allow only jumping on Ground layer
+        if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
+
         if(Input.GetButtonDown("Jump"))
         {
             Vector2 jumpVelocityToAdd = new Vector2(0f, jumpSpeed);
             myRigidBody.velocity += jumpVelocityToAdd;
         }
     }
+
 
     private void FlipSprite()
     {
@@ -58,5 +89,7 @@ public class Player : MonoBehaviour
             transform.localScale = new Vector2(Mathf.Sign(myRigidBody.velocity.x), 1f);
         }
     }
+
+
 }
 
