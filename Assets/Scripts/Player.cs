@@ -14,7 +14,8 @@ public class Player : MonoBehaviour
     // Cached component references
     Rigidbody2D myRigidBody;
     Animator myAnimator;
-    Collider2D myCollider2D; // nmeeded for Jump / Climb
+    CapsuleCollider2D myBodyCollider2D; // needed for body detection
+    BoxCollider2D myFeet; // needed for jumping and climbing
     float gravityScaleAtStart;
 
     // Message then methods
@@ -22,7 +23,8 @@ public class Player : MonoBehaviour
     {
         myRigidBody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
-        myCollider2D = GetComponent<Collider2D>(); //needed for Jump / Climb
+        myBodyCollider2D = GetComponent<CapsuleCollider2D>(); //needed for Jump / Climb
+        myFeet = GetComponent<BoxCollider2D>(); //needed for Wall jumping
         gravityScaleAtStart = myRigidBody.gravityScale; //need for Ladder
     }
 
@@ -49,7 +51,7 @@ public class Player : MonoBehaviour
 
     private void ClimbLadder()
     {
-        if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Climbing"))) 
+        if (!myFeet.IsTouchingLayers(LayerMask.GetMask("Climbing"))) 
         {
             myAnimator.SetBool("Climbing", false);
             myRigidBody.gravityScale = gravityScaleAtStart;
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour
     private void Jump()
     {
         // allow only jumping on Ground layer
-        if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
+        if (!myFeet.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
 
         if(Input.GetButtonDown("Jump"))
         {
@@ -77,7 +79,6 @@ public class Player : MonoBehaviour
             myRigidBody.velocity += jumpVelocityToAdd;
         }
     }
-
 
     private void FlipSprite()
     {
