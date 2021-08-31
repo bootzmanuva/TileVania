@@ -762,16 +762,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1766725079761572646, guid: ed2bb89848e7cc644a711c61ffa8822d,
-        type: 3}
-      propertyPath: deathKick.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1766725079761572646, guid: ed2bb89848e7cc644a711c61ffa8822d,
-        type: 3}
-      propertyPath: deathKick.y
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 1766725079761572666, guid: ed2bb89848e7cc644a711c61ffa8822d,
         type: 3}
       propertyPath: m_Name
